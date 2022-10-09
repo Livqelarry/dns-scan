@@ -1,24 +1,10 @@
-#!/usr/bin/env python3
-import sys, argparse, requests, json, http.client
+import requests, json, http.client
 
 BASE_URL = "https://crt.sh/?q={}&output=json"
 subdomains = set()
 wildcardsubdomains = set()
 
-def parser_error(errmsg):
-    print("Usage: python3 " + sys.argv[0] + " [Options] use -h for help")
-    print("Error: " + errmsg)
-    sys.exit()
-
-# Memproses Argument
-def parse_args():    
-    parser = argparse.ArgumentParser(epilog='\tExample: \r\npython3 ' + sys.argv[0] + " -d google.com")
-    parser.error = parser_error
-    parser._optionals.title = "OPTIONS"
-    parser.add_argument('-d', '--domain', help='Specify Target Domain to get subdomains from crt.sh', required=True)
-    parser.add_argument('-r', '--recursive', help='Do recursive search for subdomains', action='store_true', required=False)
-    parser.add_argument('-w', '--wildcard', help='Include wildcard in output', action='store_true', required=False)
-    return parser.parse_args()
+domain = str(input("Masukkan subdomain: "))
 
 def crtsh(domain):
     try:
@@ -37,43 +23,25 @@ def crtsh(domain):
                         else:
                             if subname_value not in wildcardsubdomains:
                                 wildcardsubdomains.add(subname_value)
-    except KeyboardInterrupt:
-        print("-"*30)
-        print("Stop by you")
-        quit()
     except:
         pass
-    
 
-if __name__ == "__main__":
-    args = parse_args()
-    crtsh(args.domain)
+crtsh(domain)
 
-    number = 1
-    if args.domain:
-        for subdomain in subdomains:
-            try:
-                connection = http.client.HTTPSConnection(f"{subdomain}")
-                connection.request("GET", "/") 
-                response = connection.getresponse()
-                print(f"{number}. {subdomain} - {response.status} {response.reason}")
-            except KeyboardInterrupt:
-                print("-"*30)
-                print("Stop by you")
-                quit()
-            except:
-                print(f"{number}. {subdomain} - ERROR")
-                pass
-            connection.close()
-            number += 1
-
-    #
-    if args.recursive:
-        for wildcardsubdomain in wildcardsubdomains.copy():
-            wildcardsubdomain = wildcardsubdomain.replace('*.', '%25.')
-            crtsh(wildcardsubdomain)
-
-    if args.wildcard:
-        for wildcardsubdomain in wildcardsubdomains:
-            print(f"{number}. {wildcardsubdomain} - {response.status} {response.reason}")
-            number += 1
+number = 1
+if domain:
+    for subdomain in subdomains:
+        try:
+            connection = http.client.HTTPSConnection(f"{subdomain}")
+            connection.request("GET", "/") 
+            response = connection.getresponse()
+            print(f"{number}. {subdomain} - {response.status} {response.reason}")
+        except KeyboardInterrupt:
+            print("-"*30)
+            print("Kode diberhentikan")
+            quit()
+        except:
+            print(f"{number}. {subdomain} - ERROR")
+            pass
+        connection.close()
+        number += 1
