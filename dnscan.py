@@ -49,8 +49,8 @@ if __name__ == "__main__":
     args = parse_args()
     crtsh(args.domain)
 
+    number = 1
     if args.domain:
-        number = 1
         for subdomain in subdomains:
             try:
                 connection = http.client.HTTPSConnection(f"{subdomain}")
@@ -75,4 +75,5 @@ if __name__ == "__main__":
 
     if args.wildcard:
         for wildcardsubdomain in wildcardsubdomains:
-            print(wildcardsubdomain)
+            print(f"{number}. {wildcardsubdomain} - {response.status} {response.reason}")
+            number += 1
